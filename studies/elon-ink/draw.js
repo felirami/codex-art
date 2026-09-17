@@ -5,12 +5,15 @@
   // Visual reference: Debbie Rowe / The Royal Society, 2018.
   // https://commons.wikimedia.org/wiki/File:Elon_Musk_Royal_Society_(crop2).jpg
   // Portrait adaptation: CC BY-SA 3.0.
-  // All geometry, hair strokes, hatching, and miniature ink gestures live here.
+  // Every small texture mark is a vector portrait containing more portraits.
 
   const root = document.getElementById('elon-ink-study');
   const viewer = window.CanvasArtViewer.create(root, { width: 420, height: 510 });
   if (!viewer) return;
   const ctx = viewer.context;
+  // The miniature uses the same face and hair geometry, cropped to the head.
+  // It is populated after the main drawing so both share the actual paths.
+  const miniature = new window.CanvasArtViewer.RecursiveSymbol(335, 420);
   ctx.translate(-430, 12);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -68,13 +71,11 @@
   }
 
   // Analytic shadow fields: x, y, spread x, spread y, darkness.
-  // At portrait scale these fields describe facial planes. Up close, each
-  // mark is an unrelated open loop, hooked stroke, or little wandering line.
-  // Their size is fixed in the artwork, not in screen pixels.
+  // At portrait scale these fields describe facial planes. Each accepted
+  // mark is a small instance of the recursive portrait, fixed in art space.
   function microInk(shape, bounds, fields, count, base = 0.01, radius = 0.43) {
     ctx.save();
     ctx.clip(typeof shape === 'string' ? path(shape) : shape);
-    ctx.strokeStyle = '#080808';
     const [x0, y0, w, h] = bounds;
     for (let i = 0; i < count * 0.22; i++) {
       const x = x0 + random() * w;
@@ -86,29 +87,11 @@
       }
       if (random() > darkness) continue;
       const r = radius * between(2.3, 6.1);
-      const angle = Math.sin(x * 0.065) + Math.cos(y * 0.045) + between(-1.1, 1.1);
-      const c = Math.cos(angle), s = Math.sin(angle);
-      const point = (u, v) => [x + r * (u * c - v * s), y + r * (u * s + v * c)];
-      const kind = Math.floor(random() * 3);
-      ctx.globalAlpha = between(0.38, 0.82);
-      ctx.lineWidth = Math.max(0.1, radius * between(0.38, 0.70));
-      ctx.beginPath();
-      if (kind === 0) {
-        ctx.moveTo(...point(-0.95, -0.2));
-        ctx.bezierCurveTo(...point(0.8, -1.2), ...point(1.2, 0.5), ...point(0.1, 0.65));
-        ctx.bezierCurveTo(...point(-0.55, 0.8), ...point(-0.75, -0.05), ...point(0.2, -0.08));
-      } else if (kind === 1) {
-        ctx.moveTo(...point(-1, 0.45));
-        ctx.bezierCurveTo(...point(-0.65, -1), ...point(-0.1, 1.1), ...point(0.2, -0.3));
-        ctx.bezierCurveTo(...point(0.4, -0.9), ...point(0.7, -0.6), ...point(1, 0.15));
-      } else {
-        ctx.moveTo(...point(-0.8, 0.6));
-        ctx.lineTo(...point(-0.2, -0.6));
-        ctx.bezierCurveTo(...point(1.1, -0.5), ...point(0.7, 0.7), ...point(0.1, 0.2));
-        ctx.moveTo(...point(0.6, 0.9));
-        ctx.lineTo(...point(1, 0.55));
-      }
-      ctx.stroke();
+      ctx.symbol(miniature, {
+        x, y, height: r * 2.2,
+        angle: 0.16 * Math.sin(x * 0.065) + 0.1 * Math.cos(y * 0.045) + between(-0.2, 0.2),
+        opacity: between(0.48, 0.88),
+      });
     }
     ctx.restore();
   }
@@ -161,6 +144,7 @@
   hatch('M600 239 C596 258 598 273 592 286 C589 295 593 302 601 306 L608 305 C599 299 598 294 603 284 C606 271 605 254 608 242 Z', 2.4, 0.35, 0.20, 0.3);
 
   // The hair silhouette is intentionally asymmetric, as in the reference.
+  const hairStart = ctx.operations.length;
   fill(hair);
   ctx.save();
   ctx.clip(hair);
@@ -214,6 +198,7 @@
     'M759 145 C780 141 790 139 796 133', 'M512 216 C505 234 511 260 516 267'
   ];
   flyaways.forEach((p, i) => line(p, i % 3 === 0 ? 0.52 : 0.36, 0.65));
+  const hairEnd = ctx.operations.length;
 
   // Forehead and brow: small, broken lines rather than a heavy outline.
   fragmentFeatures = true;
@@ -299,7 +284,8 @@
   hatch(upperLip, 1.1, 0.75, 0.47, 0.42);
   const opening = 'M579 344 C598 342 615 342 631 343 C648 344 664 341 680 338 C669 346 651 353 632 353 C611 353 594 349 579 345 Z';
   fill(opening, 0.88);
-  fill('M593 344 C608 343 625 344 638 345 C647 345 655 344 662 343 C652 349 619 351 598 347 Z', 1, '#fff');
+  const teeth = 'M593 344 C608 343 625 344 638 345 C647 345 655 344 662 343 C652 349 619 351 598 347 Z';
+  fill(teeth, 1, '#fff');
   line('M607 344 L608 348 M621 345 L621 349 M635 346 L635 349', 0.28, 0.29);
   const lowerLip = 'M588 348 C606 354 617 356 632 355 C650 355 666 347 676 341 C666 355 650 362 634 363 C615 365 599 358 588 348 Z';
   microInk(lowerLip, [585, 342, 99, 28], [[626, 362, 30, 6, 0.46], [599, 352, 12, 9, 0.16]], 5200, 0.01, 0.28);
@@ -348,5 +334,67 @@
   hatch('M699 489 L681 455 L685 457 L701 484 Z', 2.2, 0.40, 0.22, 0.3);
   line('M637 480 C639 489 639 501 639 514 M644 480 L646 514', 0.52, 0.42);
   line('M558 470 C565 481 570 494 571 512 M737 457 C728 476 724 493 723 512', 0.40, 0.27);
+
+  // A single reusable head, built from this portrait's own paths. The tiny
+  // version omits hair highlights until they occupy enough pixels to see.
+  const { Drawing } = window.CanvasArtViewer;
+  const paper = new Drawing(), ink = new Drawing(), detail = new Drawing();
+  for (const pen of [paper, ink, detail]) pen.translate(-470, -15);
+  paper.fillStyle = '#fff';
+  paper.fill(leftEar);
+  paper.fill(rightEar);
+  paper.fill(face);
+  ink.fill(hair);
+  detail.operations.push(...ctx.operations.slice(hairStart, hairEnd));
+  const features = new Drawing();
+  features.fill(path(browLeft));
+  features.fill(path(browRight));
+  features.fill(path(opening));
+  features.fillStyle = '#fff';
+  features.fill(path(teeth));
+  features.fillStyle = '#111';
+  for (const [x, y] of [[571, 235], [666, 233]]) {
+    features.beginPath();
+    features.ellipse(x, y, 3.3, 3.6, 0, 0, Math.PI * 2);
+    features.fill();
+  }
+  features.lineWidth = 1.45;
+  features.globalAlpha = 0.86;
+  features.stroke(path('M548 236 C560 231 579 231 593 237 C580 242 562 242 548 236 M642 234 C656 229 677 228 693 233 C680 240 655 241 642 234'));
+  features.stroke(path('M545 229 C558 222 579 222 592 231 M641 226 C654 220 676 219 691 226'));
+  features.stroke(path('M607 235 C603 250 605 268 599 282 C594 291 592 297 598 302 M641 276 C641 283 646 287 647 294 C649 301 644 306 638 307 M605 305 C612 312 624 312 633 305'));
+  features.stroke(path('M594 353 C605 361 619 365 634 363 C648 362 660 356 667 350 M603 379 C618 384 639 383 653 377'));
+  features.stroke(path('M525 308 C526 337 536 364 551 383 C568 404 593 419 616 425 C636 432 653 429 672 420 C696 408 718 388 731 367'));
+  features.lineWidth = 1;
+  features.globalAlpha = 0.55;
+  features.stroke(path('M575 128 C603 117 643 115 673 122 M579 153 C607 145 641 144 666 148 M543 240 L536 244 M545 246 C554 252 576 255 589 248 M642 246 C658 253 679 249 691 242'));
+  ink.operations.push(...features.operations);
+  detail.operations.push(...features.operations);
+
+  const crop = new DOMMatrix([1, 0, 0, 1, -470, -15]);
+  const proxy = new Path2D();
+  for (const shape of [hair, path(browLeft), path(browRight), path(opening)]) proxy.addPath(shape, crop);
+  const faceClip = new Path2D();
+  faceClip.addPath(face, crop);
+  Object.assign(miniature, { paper, ink, detail, proxy, faceClip });
+
+  // A fixed, seeded constellation repeats within every miniature. Children
+  // are larger relative to their parent than the surface grain, making the
+  // next generation discoverable without a huge empty stretch of zoom.
+  for (let row = 0; row < 10; row++) {
+    for (let column = 0; column < 7; column++) {
+      const x = 545 + column * 29 + between(-3, 3);
+      const y = 141 + row * 28 + between(-3, 3);
+      // Leave the eyes, nose, and smile legible between the nested faces.
+      if (y > 202 && y < 254) continue;
+      if (x > 590 && x < 648 && y > 250 && y < 324) continue;
+      if (x > 570 && x < 685 && y > 326 && y < 368) continue;
+      if (y < 195 && random() < 0.3) continue;
+      miniature.children.push({
+        x: x - 470, y: y - 15, height: between(21, 27),
+        angle: between(-0.18, 0.18), opacity: between(0.58, 0.88),
+      });
+    }
+  }
   viewer.finish();
 })();

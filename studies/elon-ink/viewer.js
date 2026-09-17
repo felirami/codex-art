@@ -9,6 +9,73 @@
     ? `${Math.round(zoom * 100)}%`
     : `${zoom.toExponential(2)}×`;
 
+  // Place a centered symbol in an existing Canvas transform. Compose in
+  // JavaScript, then set the resulting transform directly for each visible
+  // child, avoiding a growing chain of native Canvas scale operations.
+  function symbolTransform(parent, site, width, height) {
+    const scale = site.height / height;
+    const c = Math.cos(site.angle) * scale, s = Math.sin(site.angle) * scale;
+    const a = parent.a * c + parent.c * s;
+    const b = parent.b * c + parent.d * s;
+    const cc = parent.c * c - parent.a * s;
+    const d = parent.d * c - parent.b * s;
+    return {
+      a, b, c: cc, d,
+      e: parent.a * site.x + parent.c * site.y + parent.e - a * width / 2 - cc * height / 2,
+      f: parent.b * site.x + parent.d * site.y + parent.f - b * width / 2 - d * height / 2,
+    };
+  }
+
+  function visibleSymbol(t, width, height, viewport) {
+    const x = t.e + (t.a * width + t.c * height) / 2;
+    const y = t.f + (t.b * width + t.d * height) / 2;
+    const rx = (Math.abs(t.a * width) + Math.abs(t.c * height)) / 2 + 2;
+    const ry = (Math.abs(t.b * width) + Math.abs(t.d * height)) / 2 + 2;
+    return x + rx >= 0 && x - rx <= viewport.width && y + ry >= 0 && y - ry <= viewport.height;
+  }
+
+  class RecursiveSymbol {
+    constructor(width, height) {
+      this.width = width;
+      this.height = height;
+      this.children = [];
+    }
+    paint(ctx, transform, viewport, opacity = 1) {
+      const { width, height } = this;
+      if (!visibleSymbol(transform, width, height, viewport)) return;
+      const pixels = Math.hypot(transform.a, transform.b) * height;
+      ctx.save();
+      ctx.setTransform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f);
+      if (pixels < 12) {
+        // This is the same portrait's combined ink silhouette. Subpixel
+        // descendants need no traversal and no bitmap cache.
+        ctx.fillStyle = '#111';
+        ctx.globalAlpha = opacity;
+        ctx.fill(this.proxy);
+        ctx.restore();
+        return;
+      }
+      ctx.beginPath();
+      ctx.rect(0, 0, width, height);
+      ctx.clip();
+      ctx.save();
+      this.paper.paint(ctx, viewport);
+      ctx.restore();
+      if (pixels >= 80) {
+        ctx.save();
+        ctx.clip(this.faceClip);
+        for (const site of this.children) {
+          this.paint(ctx, symbolTransform(transform, site, width, height), viewport, site.opacity);
+        }
+        ctx.restore();
+      }
+      // Ink strength does not compound down the family tree: a face remains
+      // readable however many generations the viewer has entered.
+      (pixels >= 96 ? this.detail : this.ink).paint(ctx, viewport, opacity);
+      ctx.restore();
+    }
+  }
+
   class Camera {
     constructor(width, height) {
       this.width = width;
@@ -78,6 +145,7 @@
     translate(x, y) { this.operations.push({ method: 'translate', args: [x, y] }); }
     rotate(angle) { this.operations.push({ method: 'rotate', args: [angle] }); }
     clip(path) { this.operations.push({ method: 'clip', args: [path] }); }
+    symbol(symbol, site) { this.operations.push({ method: 'symbol', symbol, site }); }
     setLineDash(values) { this.dash = values.slice(); }
     beginPath() { this.currentPath = new Path2D(); }
     moveTo(...args) { this.currentPath.moveTo(...args); }
@@ -91,16 +159,25 @@
     record(method, path) {
       this.operations.push({ method, path, style: { ...this.state }, dash: this.dash });
     }
-    paint(ctx) {
-      let previous = {}, lastDash = null;
+    paint(ctx, viewport, opacity = 1) {
+      let previous = {}, lastDash = null, transform = null;
       for (const op of this.operations) {
+        if (op.method === 'symbol') {
+          transform ??= ctx.getTransform();
+          op.symbol.paint(ctx, symbolTransform(transform, op.site, op.symbol.width, op.symbol.height),
+            viewport, op.site.opacity);
+          continue;
+        }
         if (!op.path) {
           ctx[op.method](...op.args);
+          transform = null;
           if (op.method === 'restore') { previous = {}; lastDash = null; }
           continue;
         }
         for (const key of styleKeys) {
-          if (previous[key] !== op.style[key]) ctx[key] = op.style[key];
+          if (previous[key] !== op.style[key]) {
+            ctx[key] = key === 'globalAlpha' ? op.style[key] * opacity : op.style[key];
+          }
         }
         if (op.dash !== lastDash) ctx.setLineDash(op.dash);
         ctx[op.method](op.path);
@@ -156,7 +233,7 @@
       ctx.beginPath();
       ctx.rect(0, 0, width, height);
       ctx.clip();
-      drawing.paint(ctx);
+      drawing.paint(ctx, { width: pixelWidth, height: pixelHeight });
       ctx.restore();
       canvas.dataset.zoom = String(camera.zoom);
       canvas.dataset.centerX = String(camera.x);
@@ -263,7 +340,7 @@
     };
   }
 
-  const api = { Camera, Drawing, create, formatZoom };
+  const api = { Camera, Drawing, RecursiveSymbol, symbolTransform, visibleSymbol, create, formatZoom };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else scope.CanvasArtViewer = api;
 })(typeof window === 'undefined' ? globalThis : window);

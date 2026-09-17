@@ -25,7 +25,7 @@ interface and serves only the public artwork files.
 | Study | How it is drawn | Editable source |
 | --- | --- | --- |
 | **001 · Nacre** | 280 parametric curves projected from a folded, twisting torus, with theme-aware color and pointer-driven rotation. | [studies/nacre/draw.js](studies/nacre/draw.js) |
-| **002 · Elon Musk ink study** | Hand-defined facial planes, clipped hatching, and thousands of tiny, seeded loops and strokes. Zoom in to see the portrait dissolve into abstract marks. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
+| **002 · Elon Musk ink study** | Hand-defined facial planes, clipped hatching, and thousands of miniature portraits. Zoom into a tiny face to discover more faces within it. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
 
 Nacre can be paused and respects the system's reduced-motion preference. The
 portrait's seeded marks are repeatable. It uses a
@@ -36,9 +36,13 @@ The portrait supports **zoom with no fixed upper limit** using the buttons, scro
 or a two-finger pinch. Drag to pan, double-click a detail to zoom toward it, and
 choose **Fit portrait** to return to the full composition. With a toolbar button
 focused, use `+` / `−`, the arrow keys, and `0` to zoom, pan, and reset.
-The viewer replays the original Canvas paths at each scale, keeping individual
-strokes sharp. Magnification reveals the same geometry; it does not generate
-new marks or switch to a different drawing.
+The former curly marks are now miniature heads built from the main portrait's
+actual hair, brows, eyes, and smile. Every miniature contains a fixed, seeded
+arrangement of smaller copies of itself. Their positions stay fixed as you
+zoom and pan. The renderer follows only visible branches of this recursive
+pattern, replacing details too small to see with the same head's combined ink
+silhouette. There is no fixed generation count or pre-rendered image pyramid;
+the detail is drawn with Canvas paths at the current scale.
 Very large zoom values use scientific notation in the toolbar. At extreme
 scales, detail is subject to the browser's numeric and drawing precision.
 
@@ -74,7 +78,8 @@ git log --oneline
 ```
 
 The check command validates JavaScript syntax. Tests cover zoom anchoring, pinch
-geometry, pan boundaries, resetting, and drawing state during replay.
+geometry, pan boundaries, resetting, drawing state during replay, miniature
+placement, visibility culling, and recursion beyond the initially visible layers.
 Visually inspect changed studies
 in a browser as described in [CONTRIBUTING.md](CONTRIBUTING.md).
 

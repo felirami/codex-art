@@ -23,6 +23,8 @@ influenced the work. Preserve the portrait attribution and share-alike terms.
   support and its behavior when the page is hidden.
 - For the portrait, inspect the whole face and magnified ink marks. Check zoom,
   drag, keyboard controls, and Fit portrait; marks must stay fixed across scales.
+- Follow a miniature into at least two nested generations. Offscreen and
+  subpixel descendants must not expand into an exponential rendering workload.
 - Keep useful canvas descriptions and keyboard-operable controls.
 - If randomness changes, use an explicit seed when repeatability matters.
 
