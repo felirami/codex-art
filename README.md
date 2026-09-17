@@ -25,7 +25,7 @@ interface and serves only the public artwork files.
 | Study | How it is drawn | Editable source |
 | --- | --- | --- |
 | **001 · Nacre** | 280 parametric curves projected from a folded, twisting torus, with theme-aware color and pointer-driven rotation. | [studies/nacre/draw.js](studies/nacre/draw.js) |
-| **002 · Elon Musk ink study** | Hand-defined paths, analytic monochrome washes, clipped hatching, seeded stippling, and procedural hair strokes. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
+| **002 · Elon Musk ink study** | Hand-defined paths, clipped hatching, seeded stippling, and procedural hair strokes on white. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
 
 Nacre can be paused and respects the system's reduced-motion preference. The
 portrait is a static study; its seeded random marks are repeatable. It uses a

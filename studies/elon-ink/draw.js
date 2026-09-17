@@ -5,7 +5,7 @@
   // Visual reference: Debbie Rowe / The Royal Society, 2018.
   // https://commons.wikimedia.org/wiki/File:Elon_Musk_Royal_Society_(crop2).jpg
   // Portrait adaptation: CC BY-SA 3.0.
-  // All geometry, hair strokes, skin shading, and grain are generated below.
+  // All geometry, hair strokes, hatching, and stippling are generated below.
 
   const root = document.getElementById('elon-ink-study');
   const canvas = root.querySelector('#elon-ink-canvas');
@@ -49,26 +49,6 @@
     ctx.globalAlpha = opacity;
     ctx.fill();
     ctx.globalAlpha = 1;
-  }
-
-  function wash(shape, fields) {
-    ctx.save();
-    ctx.clip(typeof shape === 'string' ? path(shape) : shape);
-    for (const [x, y, rx, ry, strength] of fields) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(rx, ry);
-      const shade = ctx.createRadialGradient(0, 0, 0, 0, 0, 2.5);
-      shade.addColorStop(0, `rgba(0,0,0,${strength})`);
-      shade.addColorStop(0.25, `rgba(0,0,0,${strength * 0.75})`);
-      shade.addColorStop(0.50, `rgba(0,0,0,${strength * 0.34})`);
-      shade.addColorStop(0.75, `rgba(0,0,0,${strength * 0.08})`);
-      shade.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = shade;
-      ctx.fillRect(-2.5, -2.5, 5, 5);
-      ctx.restore();
-    }
-    ctx.restore();
   }
 
   // A pen hatch is clipped to its hand-defined plane, never to an image.
@@ -125,7 +105,6 @@
   line('M543 415 C523 440 502 470 490 507 M780 415 C806 452 818 478 824 509', 0.7, 0.5, '#fff');
 
   fill(neck, 1, '#fff');
-  wash(neck, [[625, 427, 69, 20, 0.30], [582, 444, 35, 36, 0.15], [704, 428, 20, 33, 0.12]]);
   stipple(neck, [543, 359, 217, 149], [
     [629, 420, 77, 22, 0.57], [587, 438, 33, 31, 0.35],
     [707, 426, 26, 42, 0.20], [649, 482, 25, 30, 0.14]
@@ -141,20 +120,8 @@
   line('M759 239 C751 250 755 259 754 266 C748 260 745 264 747 273 C752 275 754 279 750 284', 1.0, 0.6);
   line('M772 239 C775 263 766 294 752 305', 0.6, 0.7);
 
-  // Broad facial planes, followed by finer features.
+  // White facial planes with ink marks, followed by finer features.
   fill(face, 1, '#fff');
-  wash(face, [
-    [520, 192, 21, 93, 0.27], [528, 287, 25, 60, 0.22],
-    [554, 363, 21, 32, 0.15], [570, 396, 33, 15, 0.11],
-    [630, 420, 48, 15, 0.19], [721, 372, 16, 39, 0.16],
-    [743, 265, 12, 79, 0.12], [715, 140, 17, 32, 0.10],
-    [562, 211, 30, 12, 0.21], [571, 245, 22, 8, 0.18],
-    [666, 216, 25, 8, 0.12], [668, 245, 24, 7, 0.09],
-    [598, 267, 8, 26, 0.19], [601, 296, 9, 9, 0.23],
-    [621, 305, 12, 6, 0.22], [642, 294, 6, 8, 0.15],
-    [565, 325, 8, 13, 0.11], [581, 343, 8, 12, 0.16],
-    [683, 327, 7, 15, 0.12], [627, 375, 25, 8, 0.12]
-  ]);
   stipple(face, [511, 83, 247, 357], [
     [533, 174, 19, 76, 0.20], [538, 286, 28, 80, 0.35],
     [556, 354, 22, 39, 0.12], [550, 387, 30, 22, 0.29],
