@@ -32,13 +32,15 @@ portrait's seeded marks are repeatable. It uses a
 photograph as a visual reference, but the renderer does not embed, load, or
 sample that photograph.
 
-The portrait supports **1×–16× zoom** with the buttons, scroll wheel, trackpad,
+The portrait supports **zoom with no fixed upper limit** using the buttons, scroll wheel, trackpad,
 or a two-finger pinch. Drag to pan, double-click a detail to zoom toward it, and
 choose **Fit portrait** to return to the full composition. With a toolbar button
 focused, use `+` / `−`, the arrow keys, and `0` to zoom, pan, and reset.
 The viewer replays the original Canvas paths at each scale, keeping individual
 strokes sharp. Magnification reveals the same geometry; it does not generate
 new marks or switch to a different drawing.
+Very large zoom values use scientific notation in the toolbar. At extreme
+scales, detail is subject to the browser's numeric and drawing precision.
 
 ## Source layout
 

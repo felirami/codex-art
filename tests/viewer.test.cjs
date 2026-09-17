@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { Camera, Drawing } = require('../studies/elon-ink/viewer.js');
+const { Camera, Drawing, formatZoom } = require('../studies/elon-ink/viewer.js');
 
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} ≠ ${expected}`);
 
@@ -38,19 +38,54 @@ test('panning follows the drag and cannot reveal space outside the artwork', () 
   assert.deepEqual(camera.point(1, 1), { x: 420, y: 510 });
 });
 
-test('zoom limits and fit restore the complete composition', () => {
+test('zoom continues beyond 16× while preserving its anchor', () => {
+  const camera = new Camera(420, 510);
+  const anchor = camera.point(0.3, 0.7);
+  for (const zoom of [16, 32, 1000, 1000000, 1e12]) {
+    camera.zoomTo(zoom, 0.3, 0.7);
+    assert.equal(camera.zoom, zoom);
+    close(camera.point(0.3, 0.7).x, anchor.x);
+    close(camera.point(0.3, 0.7).y, anchor.y);
+  }
+});
+
+test('zooming out and fit restore the complete composition from deep zoom', () => {
   const camera = new Camera(420, 510);
   camera.zoomTo(1000, 0.1, 0.8);
-  assert.equal(camera.zoom, 16);
   camera.zoomTo(0.01);
   assert.equal(camera.zoom, 1);
   assert.deepEqual(camera.point(0, 0), { x: 0, y: 0 });
   assert.deepEqual(camera.point(1, 1), { x: 420, y: 510 });
-  camera.zoomTo(9);
+  camera.zoomTo(1e12);
   camera.pan(0.2, -0.4);
   camera.fit();
   assert.equal(camera.zoom, 1);
   assert.deepEqual(camera.point(0.5, 0.5), { x: 210, y: 255 });
+});
+
+test('numeric overflow cannot trap the camera in an invalid state', () => {
+  const camera = new Camera(420, 510);
+  camera.zoomTo(1000, 0.3, 0.7);
+  const previous = { ...camera };
+  for (const invalid of [Infinity, -Infinity, NaN]) {
+    camera.zoomTo(invalid, 0.1, 0.9);
+    assert.deepEqual({ ...camera }, previous);
+  }
+  camera.zoomTo(camera.zoom / 2);
+  assert.equal(camera.zoom, 500);
+  camera.fit();
+  assert.equal(camera.zoom, 1);
+});
+
+test('deep zoom labels remain compact without overflowing their numbers', () => {
+  assert.equal(formatZoom(1), '100%');
+  assert.equal(formatZoom(32), '3200%');
+  assert.equal(formatZoom(1e6), '1.00e+6×');
+  for (const zoom of [1e20, 1e200, Number.MAX_VALUE]) {
+    const label = formatZoom(zoom);
+    assert.ok(label.length <= 11);
+    assert.doesNotMatch(label, /Infinity|NaN/);
+  }
 });
 
 test('replay preserves clipping, transform order, and restored pen styles', () => {

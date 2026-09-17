@@ -4,12 +4,15 @@
   'use strict';
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  // Keep the toolbar compact even after many consecutive zoom gestures.
+  const formatZoom = zoom => zoom < 10000
+    ? `${Math.round(zoom * 100)}%`
+    : `${zoom.toExponential(2)}×`;
 
   class Camera {
-    constructor(width, height, maxZoom = 16) {
+    constructor(width, height) {
       this.width = width;
       this.height = height;
-      this.maxZoom = maxZoom;
       this.fit();
     }
     fit() {
@@ -33,8 +36,11 @@
       this.gesture(value, u, v, u, v);
     }
     gesture(value, fromU, fromV, toU, toV) {
+      // There is no artistic zoom ceiling. Reject numeric overflow so that
+      // an extreme input cannot poison the camera or prevent zooming back out.
+      if (!Number.isFinite(value)) return;
       const anchor = this.point(fromU, fromV);
-      this.zoom = clamp(value, 1, this.maxZoom);
+      this.zoom = Math.max(1, value);
       this.x = anchor.x - (toU - 0.5) * this.width / this.zoom;
       this.y = anchor.y - (toV - 0.5) * this.height / this.zoom;
       this.constrain();
@@ -157,9 +163,8 @@
       canvas.dataset.centerY = String(camera.y);
     }
     function requestPaint() {
-      const label = `${Math.round(camera.zoom * 100)}%`;
+      const label = formatZoom(camera.zoom);
       if (status.textContent !== label) status.textContent = label;
-      zoomIn.disabled = camera.zoom >= camera.maxZoom;
       zoomOut.disabled = camera.zoom <= 1;
       canvas.dataset.pannable = String(camera.zoom > 1);
       if (!frame && ready) frame = requestAnimationFrame(paint);
@@ -184,8 +189,7 @@
     fit.addEventListener('click', reset);
     canvas.addEventListener('dblclick', event => {
       const point = position(event);
-      if (camera.zoom >= camera.maxZoom) reset();
-      else zoomBy(2, point.u, point.v);
+      zoomBy(2, point.u, point.v);
     });
     canvas.addEventListener('wheel', event => {
       event.preventDefault();
@@ -259,7 +263,7 @@
     };
   }
 
-  const api = { Camera, Drawing, create };
+  const api = { Camera, Drawing, create, formatZoom };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else scope.CanvasArtViewer = api;
 })(typeof window === 'undefined' ? globalThis : window);
