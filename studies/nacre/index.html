@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nacre · Codex Art</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="draw.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="study-header">
+      <a href="../../index.html">Codex Art</a>
+      <nav aria-label="Study navigation">
+        <a href="../elon-ink/index.html">Ink study</a>
+        <a href="draw.js">JavaScript source</a>
+      </nav>
+    </header>
+    <figure>
+      <div id="nacre-art">
+        <div class="viz-row nacre-caption">
+          <span>Nacre <span class="text-small text-muted">· a study in light and thread</span></span>
+          <button class="btn btn-ghost" type="button" id="nacre-motion" aria-pressed="false">Pause</button>
+        </div>
+        <canvas id="nacre-canvas" role="img" aria-label="Nacre: a slowly breathing, iridescent sculpture made from hundreds of mathematical threads. Moving the pointer turns the form.">An iridescent, folded ring of fine threads, colored blue, violet, coral, and gold.</canvas>
+        <span id="nacre-status" class="sr-only" aria-live="polite"></span>
+      </div>
+      <figcaption>Move your pointer over the form to turn it. Animation starts paused when your system requests reduced motion.</figcaption>
+    </figure>
+  </main>
+</body>
+</html>

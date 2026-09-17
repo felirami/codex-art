@@ -1,0 +1,63 @@
+/* Original portable presentation styles. Software license: MIT. */
+:root {
+  color-scheme: light dark;
+  --background: #fff;
+  --foreground: #1a1c1f;
+  --muted-foreground: #60646b;
+  --border: #dedfe2;
+  --blue: #339cff;
+  --orange: #e25507;
+  --green: #00a240;
+  --red: #e02e2a;
+  --purple: #924ff7;
+  --yellow: #ffc300;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #181818;
+    --foreground: #fff;
+    --muted-foreground: #b4b4ba;
+    --border: #45454b;
+    --orange: #fb6a22;
+    --green: #40c977;
+    --red: #ff6764;
+    --purple: #ad7bf9;
+    --yellow: #ffd240;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100%, 800px); margin: 0 auto; padding: 28px 24px 40px; }
+.home { padding-top: 64px; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; font-weight: 500; letter-spacing: -0.035em; }
+h2 { font-size: 1.2rem; font-weight: 500; }
+a { color: inherit; text-underline-offset: 0.2em; }
+a:hover { text-decoration-thickness: 2px; }
+.eyebrow, .text-small, footer { font-size: 0.85rem; }
+.eyebrow, .text-muted, .study-list p, footer { color: var(--muted-foreground); }
+.intro { max-width: 55ch; }
+.study-list { margin: 40px 0; padding-left: 25px; }
+.study-list li { padding: 16px 0 24px 8px; }
+.study-list a { font-size: 1.3rem; }
+.study-list p { max-width: 55ch; margin: 8px 0 0; }
+.study-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 20px; }
+.study-header h1 { font-size: 1.25rem; margin: 0; letter-spacing: -0.01em; }
+.study-header nav { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.9rem; }
+figure { margin: 0; }
+figcaption { margin-top: 18px; color: var(--muted-foreground); font-size: 0.85rem; }
+footer { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-top: 32px; }
+.viz-row { display: flex; flex-wrap: wrap; align-items: center; }
+.btn { font: inherit; cursor: pointer; min-height: 40px; padding: 5px 12px; color: var(--foreground); background: transparent; border: 1px solid var(--border); border-radius: 6px; }
+.btn:hover { background: color-mix(in srgb, var(--foreground) 7%, transparent); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 420px) {
+  main { padding: 20px 16px 32px; }
+  .home { padding-top: 36px; }
+}
+

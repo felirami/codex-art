@@ -1,0 +1,15 @@
+{
+  "name": "codex-art",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Art made with JavaScript and Canvas 2D, in collaboration with Codex.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "check": "node --check scripts/serve.mjs && node --check studies/nacre/draw.js && node --check studies/elon-ink/draw.js"
+  }
+}

@@ -1,0 +1,3 @@
+#nacre-art { width: 100%; }
+  #nacre-art .nacre-caption { justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  #nacre-art canvas { display: block; width: 100%; aspect-ratio: 1.2; touch-action: pan-y; }
