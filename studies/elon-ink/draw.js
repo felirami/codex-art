@@ -307,13 +307,26 @@
   line('M619 427 C636 432 653 429 672 420 C696 408 718 388 731 367', 0.64, 0.54);
   line('M740 344 C744 334 746 321 746 310', 0.52, 0.40);
 
-  // The open white collar frames the neck; the first study stays monochrome.
-  const shirtLeft = 'M559 395 C554 418 552 442 552 465 C562 454 575 451 586 456 C601 458 617 468 623 481 L620 496 L582 510 L549 510 C546 474 548 430 559 395 Z';
-  const shirtRight = 'M745 360 C756 372 761 391 761 414 C759 447 752 476 747 504 L687 510 L688 485 C695 466 706 457 716 461 C730 465 739 475 746 488 C749 451 753 405 745 360 Z';
-  fill(shirtLeft, 1, '#fff');
-  fill(shirtRight, 1, '#fff');
-  line('M558 402 C552 424 552 446 553 463 C570 450 592 451 609 469 M560 465 C571 457 580 459 588 465', 0.64, 0.5);
-  line('M748 373 C758 398 755 445 748 479 M705 460 C722 455 741 477 746 489', 0.65, 0.4);
-  hatch('M551 445 C550 466 550 484 550 505 L559 499 L559 465 L573 457 Z', 2.3, 0.4, 0.30, 0.4);
-  hatch('M746 486 C750 465 756 428 755 408 L761 415 C759 444 752 477 748 502 Z', 2.1, -0.25, 0.25, 0.3);
+  // An uninterrupted shirt front closes beneath a V-shaped neck opening.
+  // Draw the fabric over the lower neck marks before adding the two collar leaves.
+  const shirtFront = 'M550 444 L585 439 L637 480 L696 434 L752 409 L747 514 L548 514 Z';
+  fill(shirtFront, 1, '#fff');
+  line('M585 439 L637 480 L696 434', 0.64, 0.46);
+
+  // Folded collar leaves end in distinct points, with a slight asymmetry that
+  // follows the head's angle. Their outer edges meet the jacket and shirt front.
+  const collarLeft = 'M558 405 C554 420 551 434 550 447 L591 489 L612 459 C585 442 570 424 558 405 Z';
+  const collarRight = 'M746 373 C754 393 755 416 750 435 L699 489 L681 455 C710 433 732 404 746 373 Z';
+  fill(collarLeft, 1, '#fff');
+  fill(collarRight, 1, '#fff');
+  line('M558 405 C554 420 551 434 550 447 L591 489 L612 459 C585 442 570 424 558 405', 0.65, 0.59);
+  line('M746 373 C754 393 755 416 750 435 L699 489 L681 455 C710 433 732 404 746 373', 0.65, 0.56);
+
+  // Fine seams and narrow ink hatches describe the turned fabric; no gray washes.
+  line('M554 447 L590 483 L607 460', 0.32, 0.33);
+  line('M746 435 L700 483 L686 456', 0.32, 0.31);
+  hatch('M550 447 L591 489 L587 490 L548 451 Z', 2.2, -0.35, 0.24, 0.3);
+  hatch('M699 489 L681 455 L685 457 L701 484 Z', 2.2, 0.40, 0.22, 0.3);
+  line('M637 480 C639 489 639 501 639 514 M644 480 L646 514', 0.52, 0.42);
+  line('M558 470 C565 481 570 494 571 512 M737 457 C728 476 724 493 723 512', 0.40, 0.27);
 })();
