@@ -8,6 +8,7 @@ const root = new URL('../', import.meta.url);
 const files = [
   'index.html',
   'styles.css',
+  'studies/elon-ink/viewer.js',
   ...['nacre', 'elon-ink'].flatMap(study =>
     ['index.html', 'style.css', 'draw.js'].map(file => `studies/${study}/${file}`)
   ),

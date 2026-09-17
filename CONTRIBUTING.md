@@ -7,7 +7,7 @@ readable and editable, and preserve the ability to run the studies locally.
 
 1. Create a branch, for example `git switch -c codex/portrait-next-layer`.
 2. Edit the relevant `studies/<name>/draw.js`, `style.css`, or `index.html`.
-3. Run `npm run check`, then `npm start` and inspect the changed study in a browser.
+3. Run `npm run check` and `npm test`, then `npm start` and inspect the changed study in a browser.
 4. Commit a coherent artistic or technical change with a descriptive message.
 
 The drawing code remains the source of the artwork. Do not replace it with an
@@ -21,6 +21,8 @@ influenced the work. Preserve the portrait attribution and share-alike terms.
 - Check a narrow window and a desktop window after changing layout.
 - For Nacre, check pointer rotation and Pause/Play; preserve reduced-motion
   support and its behavior when the page is hidden.
+- For the portrait, inspect the whole face and magnified ink marks. Check zoom,
+  drag, keyboard controls, and Fit portrait; marks must stay fixed across scales.
 - Keep useful canvas descriptions and keyboard-operable controls.
 - If randomness changes, use an explicit seed when repeatability matters.
 

@@ -1,2 +1,7 @@
 #elon-ink-study { width: 100%; }
-  #elon-ink-study canvas { display: block; width: 100%; max-width: 510px; height: auto; margin: 0 auto; aspect-ratio: 420 / 510; }
+#elon-ink-study .ink-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+#elon-ink-study .ink-zoom { min-width: 5ch; text-align: center; font-variant-numeric: tabular-nums; }
+#elon-ink-study .ink-hint { flex-basis: 100%; text-align: center; }
+#elon-ink-study canvas { display: block; width: 100%; max-width: 510px; height: auto; margin: 0 auto; aspect-ratio: 420 / 510; touch-action: none; cursor: zoom-in; }
+#elon-ink-study canvas[data-pannable="true"] { cursor: grab; }
+#elon-ink-study canvas[data-dragging="true"][data-pannable="true"] { cursor: grabbing; }

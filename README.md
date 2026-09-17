@@ -25,12 +25,20 @@ interface and serves only the public artwork files.
 | Study | How it is drawn | Editable source |
 | --- | --- | --- |
 | **001 · Nacre** | 280 parametric curves projected from a folded, twisting torus, with theme-aware color and pointer-driven rotation. | [studies/nacre/draw.js](studies/nacre/draw.js) |
-| **002 · Elon Musk ink study** | Hand-defined paths, clipped hatching, seeded stippling, and procedural hair strokes on white. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
+| **002 · Elon Musk ink study** | Hand-defined facial planes, clipped hatching, and thousands of tiny, seeded loops and strokes. Zoom in to see the portrait dissolve into abstract marks. | [studies/elon-ink/draw.js](studies/elon-ink/draw.js) |
 
 Nacre can be paused and respects the system's reduced-motion preference. The
-portrait is a static study; its seeded random marks are repeatable. It uses a
+portrait's seeded marks are repeatable. It uses a
 photograph as a visual reference, but the renderer does not embed, load, or
 sample that photograph.
+
+The portrait supports **1×–16× zoom** with the buttons, scroll wheel, trackpad,
+or a two-finger pinch. Drag to pan, double-click a detail to zoom toward it, and
+choose **Fit portrait** to return to the full composition. With a toolbar button
+focused, use `+` / `−`, the arrow keys, and `0` to zoom, pan, and reset.
+The viewer replays the original Canvas paths at each scale, keeping individual
+strokes sharp. Magnification reveals the same geometry; it does not generate
+new marks or switch to a different drawing.
 
 ## Source layout
 
@@ -38,14 +46,17 @@ sample that photograph.
 index.html                 Study index
 styles.css                 Portable layout and theme colors
 studies/nacre/             Nacre page, styles, and complete renderer
-studies/elon-ink/           Portrait page, styles, and complete renderer
+studies/elon-ink/           Portrait page, drawing, and vector zoom viewer
 scripts/serve.mjs          Local server using only Node's standard library
+tests/                    Camera and drawing replay checks
 archive/                  Original conversation fragments
 ```
 
-Edit the files in `studies/` to continue the artwork. Each `draw.js` is the
-complete rendering source for that study, and each `index.html` can be opened
-independently. The styles are ordinary CSS; there is no Codex runtime dependency.
+Edit the files in `studies/` to continue the artwork. Each `draw.js` contains
+the complete artwork geometry. The portrait also uses
+[viewer.js](studies/elon-ink/viewer.js) to record and replay its paths with zoom
+and pan. Each `index.html` can be opened independently. The styles are ordinary
+CSS; there is no Codex runtime dependency.
 
 The `archive/` directory preserves the original conversation fragments exactly
 as they existed when Git was initialized. Those fragments rely on the original
@@ -56,10 +67,13 @@ project. The archive is a historical record, not a second editable source.
 
 ```sh
 npm run check
+npm test
 git log --oneline
 ```
 
-The check command validates JavaScript syntax. Visually inspect changed studies
+The check command validates JavaScript syntax. Tests cover zoom anchoring, pinch
+geometry, pan boundaries, resetting, and drawing state during replay.
+Visually inspect changed studies
 in a browser as described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 All project source and commits are public. Git history begins with the completed

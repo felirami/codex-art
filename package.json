@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node scripts/serve.mjs",
     "dev": "node scripts/serve.mjs",
-    "check": "node --check scripts/serve.mjs && node --check studies/nacre/draw.js && node --check studies/elon-ink/draw.js"
+    "check": "node --check scripts/serve.mjs && node --check studies/nacre/draw.js && node --check studies/elon-ink/viewer.js && node --check studies/elon-ink/draw.js",
+    "test": "node --test tests/*.test.cjs"
   }
 }

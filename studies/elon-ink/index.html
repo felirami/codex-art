@@ -6,6 +6,7 @@
   <title>Elon Musk · Ink study · Codex Art</title>
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="style.css">
+  <script src="viewer.js" defer></script>
   <script src="draw.js" defer></script>
 </head>
 <body>
@@ -19,7 +20,15 @@
     </header>
     <figure>
       <div id="elon-ink-study">
-        <canvas id="elon-ink-canvas" role="img" aria-label="A black-and-white ink portrait of Elon Musk, drawn in JavaScript with curves, hatching, and stippled shading.">A black-and-white portrait of Elon Musk with swept-back hair, a slight smile, and an open shirt collar.</canvas>
+        <div class="ink-toolbar viz-controls" role="group" aria-label="Portrait zoom">
+          <button class="btn" type="button" data-zoom-out aria-label="Zoom out">−</button>
+          <output class="ink-zoom tabular-nums" data-zoom-status aria-label="Zoom level" aria-live="polite">100%</output>
+          <button class="btn" type="button" data-zoom-in aria-label="Zoom in">+</button>
+          <button class="btn" type="button" data-zoom-fit>Fit portrait</button>
+          <span class="ink-hint text-small text-muted">Scroll or pinch to zoom · Drag to explore</span>
+        </div>
+        <canvas id="elon-ink-canvas" role="img" aria-describedby="ink-keyboard-help" aria-label="An abstract black-and-white portrait of Elon Musk. From a distance, the marks form a face; zooming in reveals small loops, hooks, and broken contours.">An abstract ink portrait of Elon Musk with swept-back hair, hooded eyes, and an open shirt collar.</canvas>
+        <span id="ink-keyboard-help" class="sr-only">Focus a zoom button to use plus and minus to zoom, arrow keys to pan, and zero to fit the portrait. Double-click the artwork to zoom toward a detail.</span>
       </div>
       <figcaption>
         Code-drawn portrait by felirami with Codex, 2026. Visual reference:
